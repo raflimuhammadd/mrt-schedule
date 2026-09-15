@@ -2,6 +2,7 @@ package station
 
 import (
 	"net/http"
+	"strings"
 
 	"github.com/gin-gonic/gin"
 	"github.com/raflimuhammadd/mrt-schedule/common/response"
@@ -16,8 +17,12 @@ func Initiate(router *gin.RouterGroup) {
 		GetAllStation(c, stationService)
 	})
 
-	station.GET("/:id", func(c *gin.Context) {
+	station.GET("/id/:id", func(c *gin.Context) {
 		CheckSchedulesByStation(c, stationService) 
+	})
+
+	station.GET("/:slug/schedules", func(c *gin.Context) {
+		GetStationSchedules(c, stationService)
 	})
 }
 
@@ -46,6 +51,53 @@ func GetAllStation(c *gin.Context, service Service) {
 		},
 	)
 } 
+
+func GetStationSchedules(c *gin.Context, service Service) {
+	slug := c.Param("slug")
+
+	if slug == "" {
+		c.JSON(
+			http.StatusBadRequest,
+			response.APIResponse{
+				Success: false,
+				Message: "Station slug is required",
+				Data: nil,
+			},
+		)
+		return
+	}
+
+	data, err := service.GetStationScheduleBySlug(slug)
+	if err != nil {
+		errorMsg := err.Error()
+		statusCode := http.StatusInternalServerError
+
+		if strings.Contains(errorMsg, "not found") {
+			statusCode = http.StatusNotFound
+		} else if strings.Contains(errorMsg, "required") {
+			statusCode = http.StatusBadRequest
+		}
+
+		c.JSON(
+			statusCode,
+			response.APIResponse{
+				Success: false,
+				Message: errorMsg,
+				Data: nil,
+			},
+		)
+		return
+	}
+
+	c.JSON(
+		http.StatusOK,
+		response.APIResponse{
+			Success: true,
+			Message: "successfully get schedules",
+			Data: data,
+		},
+	)
+}
 
 func CheckSchedulesByStation(c *gin.Context, service Service) {
 	id := c.Param("id")
