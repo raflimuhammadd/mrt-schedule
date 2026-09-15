@@ -67,7 +67,7 @@ mrt-schedule/
 
    The server will start at `http://localhost:8080`
 
-## API Documentation 📚
+## API Documentation
 
 ### Base URL
 ```
