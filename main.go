@@ -6,8 +6,8 @@ import (
 	"github.com/joho/godotenv"
 	"github.com/gin-gonic/gin"
 	"github.com/raflimuhammadd/mrt-schedule/modules/station"
+	"github.com/raflimuhammadd/mrt-schedule/modules/journey"
 )
-
 
 func main() {
 	if err := godotenv.Load(); err != nil {
@@ -25,6 +25,7 @@ func initiateRouter() {
 	)
 
 	station.Initiate(api)
+	journey.Initiate(api)
 
 	router.Run(":8080")
 }
