@@ -42,7 +42,6 @@ func FindStationBySlug(slug string) (*StationOrderItem, error) {
 
 // Helper function untuk partial slug match
 func slugContains(stationSlug, reqSlug string) bool {
-	// Remove "stasiun-" prefix untuk matching
 	stationClean := stationSlug
 	if len(stationSlug) > 10 && stationSlug[:10] == "stasiun-" {
 		stationClean = stationSlug[10:]
